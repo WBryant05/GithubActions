@@ -1,10 +1,21 @@
-name: 'Basic Action'
+name: 'Run App Bryant, William'
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: windows-latest
     steps:
-      - name: Basic Action
-        run: echo "Hello, World!"
+      - uses: actions/checkout@v4
+      - name: install dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Restore NuGet packages
+        run: nuget restore GithubActions.sln
+        
+      - name: build
+        run: dotnet build
+      - name: run unit tests
+        run: '& "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\vstest.console.exe" .\Tests\bin\Debug\Tests.dll'
